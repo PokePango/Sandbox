@@ -1,0 +1,166 @@
+##########################################################################
+# Title:            Sandbox: romm   | Default Variables                 #
+# Author(s):        PokePango                                            #
+# URL:              https://github.com/saltyorg/Sandbox                  #
+# --                                                                     #
+##########################################################################
+#                   GNU General Public License v3.0                      #
+##########################################################################
+---
+################################
+# Basics
+################################
+
+romm_name: romm
+
+################################
+# Paths
+################################
+
+romm_paths_folder: "{{ romm_name }}"
+romm_paths_location: "{{ server_appdata_path }}/{{ romm_paths_folder }}"
+romm_paths_folders_list:
+  - "{{ romm_library_location }}"
+  - "{{ romm_paths_location }}"
+  - "{{ romm_paths_location }}/assets"
+  - "{{ romm_paths_location }}/resources"
+  - "{{ romm_paths_location }}/config"
+  - "{{ romm_paths_location }}/redis-data"
+romm_paths_recursive: true
+
+################################
+# Web
+################################
+
+romm_web_subdomain: "{{ romm_name }}"
+romm_web_domain: "{{ user.domain }}"
+romm_web_port: "8080"
+romm_web_url: "{{ 'https://' + (romm_web_subdomain + '.' + romm_web_domain
+                         if (romm_web_subdomain | length > 0)
+                         else romm_web_domain) }}"
+
+################################
+# DNS
+################################
+
+romm_dns_record: "{{ lookup('vars', romm_name + '_web_subdomain', default=romm_web_subdomain) }}"
+romm_dns_zone: "{{ lookup('vars', romm_name + '_web_domain', default=romm_web_domain) }}"
+romm_dns_proxy: "{{ dns.proxied }}"
+
+################################
+# Traefik
+################################
+
+romm_traefik_sso_middleware: ""
+romm_traefik_middleware_default: "{{ traefik_default_middleware }}"
+romm_traefik_middleware_custom: ""
+romm_traefik_certresolver: "{{ traefik_default_certresolver }}"
+romm_traefik_enabled: true
+
+################################
+# Docker
+################################
+
+# Container
+romm_docker_container: "{{ romm_name }}"
+
+# Image
+romm_docker_image_pull: true
+romm_docker_image_repo: "rommapp/romm"
+romm_docker_image_tag: "latest"
+romm_docker_image: "{{ lookup('vars', romm_name + '_docker_image_repo', default=romm_docker_image_repo)
+                                 + ':' + lookup('vars', romm_name + '_docker_image_tag', default=romm_docker_image_tag) }}"
+
+# Ports
+romm_docker_ports_defaults: []
+romm_docker_ports_custom: []
+romm_docker_ports: "{{ lookup('vars', romm_name + '_docker_ports_defaults', default=romm_docker_ports_defaults)
+                                 + lookup('vars', romm_name + '_docker_ports_custom', default=romm_docker_ports_custom) }}"
+
+# Envs
+romm_docker_envs_default:
+  DB_HOST: "mariadb"
+  DB_PORT: "3306"
+  DB_USER: "root"
+  DB_PASSWD: "{{ mariadb_docker_env_password }}"
+  DB_DATABASE: romm
+  ROMM_AUTH_SECRET_KEY: "{{ romm_auth_secret_key }}"
+  TZ: "{{ tz }}"
+romm_docker_envs_custom: {}
+romm_docker_envs: "{{ lookup('vars', romm_name + '_docker_envs_default', default=romm_docker_envs_default)
+                                | combine(lookup('vars', romm_name + '_docker_envs_custom', default=romm_docker_envs_custom)) }}"
+
+# Commands
+romm_docker_commands_default: []
+romm_docker_commands_custom: []
+romm_docker_commands: "{{ lookup('vars', romm_name + '_docker_commands_default', default=romm_docker_commands_default)
+                                    + lookup('vars', romm_name + '_docker_commands_custom', default=romm_docker_commands_custom) }}"
+
+# Volumes
+romm_docker_volumes_default:
+  - "{{ romm_paths_location }}/resources:/romm/resources"
+  - "{{ romm_paths_location }}/config:/romm/config"
+  - "{{ romm_paths_location }}/redis-data:/redis-data"
+  - "{{ romm_paths_location }}/assets:/romm/assets"
+  - "{{ romm_library_location }}:/romm/library"
+romm_docker_volumes_custom: []
+romm_docker_volumes: "{{ lookup('vars', romm_name + '_docker_volumes_default', default=romm_docker_volumes_default)
+                                   + lookup('vars', romm_name + '_docker_volumes_custom', default=romm_docker_volumes_custom) }}"
+
+# Devices
+romm_docker_devices_default: []
+romm_docker_devices_custom: []
+romm_docker_devices: "{{ lookup('vars', romm_name + '_docker_devices_default', default=romm_docker_devices_default)
+                                   + lookup('vars', romm_name + '_docker_devices_custom', default=romm_docker_devices_custom) }}"
+
+# Hosts
+romm_docker_hosts_default: {}
+romm_docker_hosts_custom: {}
+romm_docker_hosts: "{{ docker_hosts_common
+                                 | combine(lookup('vars', romm_name + '_docker_hosts_default', default=romm_docker_hosts_default))
+                                 | combine(lookup('vars', romm_name + '_docker_hosts_custom', default=romm_docker_hosts_custom)) }}"
+
+# Labels
+romm_docker_labels_default: {}
+romm_docker_labels_custom: {}
+romm_docker_labels: "{{ docker_labels_common
+                                  | combine(lookup('vars', romm_name + '_docker_labels_default', default=romm_docker_labels_default))
+                                  | combine(lookup('vars', romm_name + '_docker_labels_custom', default=romm_docker_labels_custom)) }}"
+
+# Hostname
+romm_docker_hostname: "{{ romm_name }}"
+
+# Networks
+romm_docker_networks_alias: "{{ romm_name }}"
+romm_docker_networks_default: []
+romm_docker_networks_custom: []
+romm_docker_networks: "{{ docker_networks_common
+                                    + lookup('vars', romm_name + '_docker_networks_default', default=romm_docker_networks_default)
+                                    + lookup('vars', romm_name + '_docker_networks_custom', default=romm_docker_networks_custom) }}"
+
+# Capabilities
+romm_docker_capabilities_default: []
+romm_docker_capabilities_custom: []
+romm_docker_capabilities: "{{ lookup('vars', romm_name + '_docker_capabilities_default', default=romm_docker_capabilities_default)
+                                        + lookup('vars', romm_name + '_docker_capabilities_custom', default=romm_docker_capabilities_custom) }}"
+
+# Security Opts
+romm_docker_security_opts_default: []
+romm_docker_security_opts_custom: []
+romm_docker_security_opts: "{{ lookup('vars', romm_name + '_docker_security_opts_default', default=romm_docker_security_opts_default)
+                                         + lookup('vars', romm_name + '_docker_security_opts_custom', default=romm_docker_security_opts_custom) }}"
+
+# Restart Policy
+romm_docker_restart_policy: unless-stopped
+
+# State
+romm_docker_state: started
+
+# User
+romm_docker_user: "{{ uid }}:{{ gid }}"
+
+# Dependencies
+romm_depends_on: "mariadb"
+romm_depends_on_delay: "0"
+romm_depends_on_healthchecks: "false"
+
