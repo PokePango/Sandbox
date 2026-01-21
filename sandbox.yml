@@ -156,6 +156,7 @@
     - { role: resiliosync, tags: ['resiliosync'] }
     - { role: rflood, tags: ['rflood'] }
     - { role: rocketchat, tags: ['rocketchat'] }
+    - { role: romm, tags: ['romm'] }
     - { role: sabthrottle, tags: ['sabthrottle'] }
     - { role: semaphoreui, tags: ['semaphoreui'] }
     - { role: solr, tags: ['solr'] }
